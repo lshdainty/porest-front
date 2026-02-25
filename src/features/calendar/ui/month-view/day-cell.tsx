@@ -18,11 +18,10 @@ interface IProps {
   cell: ICalendarCell;
   events: IEvent[];
   eventPositions: Record<string, number>;
+  maxVisibleEvents: number;
 }
 
-const MAX_VISIBLE_EVENTS = 3;
-
-const DayCell = ({ cell, events, eventPositions }: IProps) => {
+const DayCell = ({ cell, events, eventPositions, maxVisibleEvents }: IProps) => {
   const { setSelectedDate, setView, findHolidayByDate } = useCalendar();
   const { selectionStart, selectionEnd, startSelection, updateSelection, endSelection } = useDragSelect();
 
@@ -125,7 +124,7 @@ const DayCell = ({ cell, events, eventPositions }: IProps) => {
             )}
           </div>
 
-          {cellEvents.length > MAX_VISIBLE_EVENTS && (
+          {cellEvents.length > maxVisibleEvents && (
             <button
               onClick={handleClick}
               className={cn(
@@ -133,15 +132,15 @@ const DayCell = ({ cell, events, eventPositions }: IProps) => {
                 !currentMonth && 'opacity-50'
               )}
             >
-              <span className='sm:hidden'>+{cellEvents.length - MAX_VISIBLE_EVENTS}</span>
-              <span className='hidden sm:inline'>{cellEvents.length - MAX_VISIBLE_EVENTS} more</span>
+              <span className='sm:hidden'>+{cellEvents.length - maxVisibleEvents}</span>
+              <span className='hidden sm:inline'>{cellEvents.length - maxVisibleEvents} more</span>
             </button>
           )}
         </div>
 
         {/* 두 번째 줄: 이벤트들 */}
         <div className={cn('flex flex-1 h-6 gap-1 px-2 lg:flex-col lg:gap-2 lg:px-0', !currentMonth && 'opacity-50')}>
-          {[0, 1, 2].map(position => {
+          {Array.from({ length: maxVisibleEvents }, (_, i) => i).map(position => {
             const event = cellEvents.find(e => e.position === position);
             const eventKey = event ? `event-${event.id}-${position}` : `empty-${position}`;
 

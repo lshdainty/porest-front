@@ -65,11 +65,15 @@ const CalendarContent = () => {
   useEffect(() => {
     if (apiEvents && !eventsLoading && users.length > 0) {
       try {
-        const { events } = convertApiEvents(apiEvents, users.map(u => ({
-          user_id: u.id,
-          user_name: u.name,
-          profile_url: u.picturePath || ''
-        })));
+        // 기존 users 맵 생성
+        const userMap = new Map(users.map(u => [u.id, { user_id: u.id, user_name: u.name, profile_url: u.picturePath || '' }]));
+        // 이벤트에서 누락된 사용자 추가 (SYSTEM 계정 등)
+        apiEvents.forEach(e => {
+          if (!userMap.has(e.user_id)) {
+            userMap.set(e.user_id, { user_id: e.user_id, user_name: e.user_name, profile_url: '' });
+          }
+        });
+        const { events } = convertApiEvents(apiEvents, [...userMap.values()]);
         setLocalEvents(events);
       } catch (error) {
         console.error('Error converting API events:', error);

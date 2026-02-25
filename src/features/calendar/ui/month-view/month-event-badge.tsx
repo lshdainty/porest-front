@@ -7,6 +7,7 @@ import { EventDetailsDialog } from '@/features/calendar/ui/dialogs/event-details
 import { DraggableEvent } from '@/features/calendar/ui/dnd/draggable-event';
 
 import { cn } from '@/shared/lib'
+import { getEventDisplayName } from '@/features/calendar/lib/helpers';
 
 import type { IEvent } from '@/features/calendar/model/interfaces';
 import type { VariantProps } from 'class-variance-authority';
@@ -127,7 +128,7 @@ const MonthEventBadge = ({ event, cellDate, eventCurrentDay, eventTotalDays, cla
                         Day {eventCurrentDay} of {eventTotalDays} •{' '}
                       </span>
                     )}
-                    {event.user.name} {event.title}
+                    {getEventDisplayName(event)}
                   </p>
                 )}
               </div>

@@ -7,6 +7,7 @@ import { EventDetailsDialog } from '@/features/calendar/ui/dialogs/event-details
 import { DraggableEvent } from '@/features/calendar/ui/dnd/draggable-event';
 
 import { cn } from '@/shared/lib'
+import { getEventDisplayName } from '@/features/calendar/lib/helpers';
 
 import type { IEvent } from '@/features/calendar/model/interfaces';
 import type { VariantProps } from 'class-variance-authority';
@@ -80,7 +81,7 @@ export function EventBlock({ event, className }: IProps) {
               </svg>
             )}
 
-            <p className='truncate font-semibold'>{event.user.name} {event.title}</p>
+            <p className='truncate font-semibold'>{getEventDisplayName(event)}</p>
           </div>
 
           {durationInMinutes > 25 && (

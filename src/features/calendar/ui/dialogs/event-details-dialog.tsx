@@ -12,6 +12,7 @@ import { usePermission } from '@/entities/session';
 import { useUser } from '@/entities/session';
 import { EditEventDialog } from '@/features/calendar/ui/dialogs/edit-event-dialog';
 import { useDeleteEvent } from '@/features/calendar/lib/hooks/use-delete-event';
+import { getEventDisplayName } from '@/features/calendar/lib/helpers';
 
 import type { IEvent } from '@/features/calendar/model/interfaces';
 
@@ -55,7 +56,7 @@ export function EventDetailsDialog({ event, children }: IProps) {
 
         <DialogContent className='sm:max-w-sm'>
           <DialogHeader>
-            <DialogTitle>{event.user.name} {event.title}</DialogTitle>
+            <DialogTitle>{getEventDisplayName(event)}</DialogTitle>
           </DialogHeader>
 
           <div className='space-y-4'>

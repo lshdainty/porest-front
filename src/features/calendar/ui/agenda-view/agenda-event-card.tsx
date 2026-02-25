@@ -8,6 +8,8 @@ import { useCalendar } from '@/features/calendar/model/calendar-context';
 
 import { EventDetailsDialog } from '@/features/calendar/ui/dialogs/event-details-dialog';
 
+import { getEventDisplayName } from '@/features/calendar/lib/helpers';
+
 import type { IEvent } from '@/features/calendar/model/interfaces';
 import type { VariantProps } from 'class-variance-authority';
 
@@ -85,7 +87,7 @@ const AgendaEventCard = ({ event, eventCurrentDay, eventTotalDays }: IProps) => 
                   Day {eventCurrentDay} of {eventTotalDays} •{' '}
                 </span>
               )}
-              {event.user.name} {event.title}
+              {getEventDisplayName(event)}
             </p>
           </div>
 
