@@ -104,6 +104,15 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({
   // VACATION:MANAGE 권한이 있을 때만 유저 목록 조회
   const { data: users, isLoading: isLoadingUsers } = useUsersQuery();
 
+  // 로그인 사용자가 users 목록에 없으면 추가 (SYSTEM 계정 지원)
+  const userOptions = useMemo(() => {
+    const list = users ?? [];
+    if (loginUser && !list.find(u => u.user_id === loginUser.user_id)) {
+      return [{ user_id: loginUser.user_id, user_name: loginUser.user_name } as typeof list[number], ...list];
+    }
+    return list;
+  }, [users, loginUser]);
+
   // open 상태 관리: props가 있으면 props 사용, 없으면 내부 상태 사용
   const open = propOpen !== undefined ? propOpen : internalOpen;
   const setOpen = onOpenChange || setInternalOpen;
@@ -224,7 +233,7 @@ export const AddEventDialog: React.FC<AddEventDialogProps> = ({
                         <SelectValue placeholder={isLoadingUsers ? tc('loading') : t('addEvent.selectUserPlaceholder')} />
                       </SelectTrigger>
                       <SelectContent>
-                        {users?.map((user) => (
+                        {userOptions.map((user) => (
                           <SelectItem key={user.user_id} value={user.user_id}>
                             {user.user_name} ({user.user_id})
                           </SelectItem>

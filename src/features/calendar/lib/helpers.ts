@@ -169,6 +169,17 @@ export function getVisibleHours(visibleHours: TVisibleHours, singleDayEvents: IE
   return { hours, earliestEventHour, latestEventHour };
 }
 
+// ================ Event display helper functions ================ //
+
+/**
+ * 이벤트 표시명 반환
+ * BIRTHPARTY는 사용자 이름 없이 타이틀만 표시
+ */
+export function getEventDisplayName(event: IEvent): string {
+  if (event.type.id === 'BIRTHPARTY') return event.title;
+  return `${event.user.name} ${event.title}`;
+}
+
 // ================ Month view helper functions ================ //
 
 /**
@@ -212,7 +223,7 @@ export function getCalendarCells(selectedDate: Date): ICalendarCell[] {
   return [...prevMonthCells, ...currentMonthCells, ...nextMonthCells];
 }
 
-export function calculateMonthEventPositions(multiDayEvents: IEvent[], singleDayEvents: IEvent[], selectedDate: Date) {
+export function calculateMonthEventPositions(multiDayEvents: IEvent[], singleDayEvents: IEvent[], selectedDate: Date, maxSlots = 3) {
   const monthStart = startOfMonth(selectedDate);
   const monthEnd = endOfMonth(selectedDate);
 
@@ -221,7 +232,7 @@ export function calculateMonthEventPositions(multiDayEvents: IEvent[], singleDay
 
   eachDayOfInterval({ start: monthStart, end: monthEnd }).forEach(day => {
     const dayKey = startOfDay(day).toISOString();
-    occupiedPositions[dayKey] = [false, false, false];
+    occupiedPositions[dayKey] = Array(maxSlots).fill(false);
   });
 
   const sortedEvents = [
@@ -245,7 +256,7 @@ export function calculateMonthEventPositions(multiDayEvents: IEvent[], singleDay
 
     let position = -1;
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < maxSlots; i++) {
       if (
         eventDays.every(day => {
           const dayKey = startOfDay(day).toISOString();
