@@ -1,99 +1,80 @@
 pipeline {
     agent any
-    
-    tools {
-        nodejs 'node20'
+    parameters {
+        choice(name: 'DEPLOY_ENV', choices: ['dev', 'prod'], description: '배포 환경')
+        string(name: 'GIT_REF', defaultValue: 'main', description: '브랜치 또는 태그 (main, v1.0.0)')
     }
-    
     environment {
-        NGINX_PATH = '/var/www/html'
-        BUILD_PATH = 'dist'  // Vite 사용 시 'dist'로 변경
+        REPO_URL = "https://github.com/lshdainty/porest-hr-front.git"
+        IMAGE_NAME = "porest-front"
+        SRC_DIR = "${env.POREST_BASE_DIR}/src/hr-front"
+        ENV_SRC_DIR = "${env.POREST_BASE_DIR}/frontend"
+        APP_NAME = "hr"
+        CONTAINER_NAME = "hr-frontend"
     }
-    
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    credentialsId: 'github-credentials',
-                    url: 'https://github.com/lshdainty/porest-front.git'
-            }
-        }
-        
-        stage('Install Dependencies') {
-            steps {
-                sh '''
-                    echo "Node version:"
-                    node --version
-                    echo "NPM version:"
-                    npm --version
-                    npm ci
-                '''
-            }
-        }
-        
-        stage('Generate i18n') {
-            steps {
-                sh 'npm run i18n:generate'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'npm run build:skip-check'
-            }
-        }
-        
-        stage('Deploy to Nginx') {
-            steps {
-                script {
-                    // 기존 파일 백업
-                    sh """
-                        if [ -d ${NGINX_PATH} ]; then
-                            sudo rm -rf ${NGINX_PATH}.backup
-                            sudo mv ${NGINX_PATH} ${NGINX_PATH}.backup
-                        fi
-                    """
-                    
-                    // 새 파일 배치
-                    sh """
-                        sudo mkdir -p ${NGINX_PATH}
-                        sudo cp -r ${BUILD_PATH}/* ${NGINX_PATH}/
-                    """
-                    
-                    // 권한 설정
-                    sh """
-                        sudo chown -R www-data:www-data ${NGINX_PATH}
-                        sudo chmod -R 755 ${NGINX_PATH}
-                    """
-                    
-                    // Nginx 재시작
-                    sh "sudo systemctl reload nginx"
-                    
-                    echo "✅ React 배포 완료!"
+                dir("${SRC_DIR}") {
+                    git branch: "${params.GIT_REF}",
+                        url: "${REPO_URL}",
+                        credentialsId: 'github-credentials'
                 }
             }
         }
-    }
-    
-    post {
-        success {
-            echo '✅ React 배포 성공!'
+        stage('Prepare Env') {
+            steps {
+                dir("${SRC_DIR}") {
+                    sh "cp ${ENV_SRC_DIR}/${params.DEPLOY_ENV}/${APP_NAME}/${params.DEPLOY_ENV}.env .env.production"
+                }
+            }
         }
-        failure {
-            echo '❌ React 배포 실패! 백업 복구 중...'
-            script {
+        stage('Docker Build') {
+            steps {
+                dir("${SRC_DIR}") {
+                    sh "docker build -t ${IMAGE_NAME}:latest ."
+                }
+            }
+        }
+        stage('Deploy to Dev') {
+            when { expression { params.DEPLOY_ENV == 'dev' } }
+            steps {
+                echo "Deploying HR Frontend to Development..."
                 sh """
-                    if [ -d ${NGINX_PATH}.backup ]; then
-                        sudo rm -rf ${NGINX_PATH}
-                        sudo mv ${NGINX_PATH}.backup ${NGINX_PATH}
-                        sudo systemctl reload nginx
-                        echo "✅ 백업 복구 완료"
-                    fi
+                    docker stop ${CONTAINER_NAME}-dev || true
+                    docker rm ${CONTAINER_NAME}-dev || true
+                    docker run -d --name ${CONTAINER_NAME}-dev \
+                        --hostname ${CONTAINER_NAME}-dev \
+                        --network ${env.DEV_NETWORK} \
+                        ${IMAGE_NAME}:latest
                 """
             }
         }
-        cleanup {
-            cleanWs()
+        stage('Approval for Prod') {
+            when { expression { params.DEPLOY_ENV == 'prod' } }
+            steps {
+                script {
+                    input(
+                        id: 'DeployToProd',
+                        message: "운영 서버에 배포하시겠습니까?",
+                        ok: '배포'
+                    )
+                }
+            }
+        }
+        stage('Deploy to Prod') {
+            when { expression { params.DEPLOY_ENV == 'prod' } }
+            steps {
+                echo "Deploying HR Frontend to Production..."
+                sh """
+                    docker stop ${CONTAINER_NAME}-prod || true
+                    docker rm ${CONTAINER_NAME}-prod || true
+                    docker run -d --name ${CONTAINER_NAME}-prod \
+                        --hostname ${CONTAINER_NAME}-prod \
+                        --network ${env.PROD_NETWORK} \
+                        ${IMAGE_NAME}:latest
+                """
+            }
         }
     }
 }
