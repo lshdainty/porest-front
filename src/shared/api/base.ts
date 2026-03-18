@@ -24,7 +24,6 @@ apiClient.interceptors.request.use(
     return config
   },
   (err: AxiosError) => {
-    console.log('axios request error : ', err)
     return Promise.reject(err)
   }
 )
@@ -35,8 +34,6 @@ apiClient.interceptors.response.use(
     return resp.data
   },
   async (err: AxiosError<ApiErrorResponse>) => {
-    console.log('axios response error : ', err)
-
     const message = err.response?.data?.message || err.message || 'An unknown error occurred.'
     toast.error(message)
 

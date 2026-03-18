@@ -294,7 +294,7 @@ const ReportContent = () => {
     }
   };
 
-  const handleDownloadTemplate = () => console.log('예시 파일 다운로드');
+  const handleDownloadTemplate = () => {};
 
   const handleDownloadUnregistered = () => {
     setIsUnregisteredDialogOpen(true);

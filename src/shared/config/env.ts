@@ -12,7 +12,3 @@ export const config: Config = {
   ssoUrl: import.meta.env.VITE_SSO_URL || '',
 }
 
-// 개발 모드에서 환경 변수 확인
-if (import.meta.env.DEV) {
-  console.log('현재 환경 설정:', config)
-}
