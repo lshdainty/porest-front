@@ -1,5 +1,5 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/shadcn/popover';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 const RuleAttire = () => {
   const { t } = useTranslation('culture');
@@ -32,7 +32,9 @@ const RuleAttire = () => {
           <img src='/rule_2_3.png' alt='rule_2_3' className='w-full h-48 object-cover' />
           <div className='p-5'>
             <h3 className='text-lg font-semibold text-gray-800 dark:text-card-foreground mb-2'>{t('rule.attire.fieldTitle')}</h3>
-            <p className='text-sm text-gray-600 dark:text-card-foreground line-clamp-4' dangerouslySetInnerHTML={{ __html: t('rule.attire.fieldDesc') }} />
+            <p className='text-sm text-gray-600 dark:text-card-foreground line-clamp-4'>
+              <Trans i18nKey='rule.attire.fieldDesc' ns='culture' components={{ br: <br /> }} />
+            </p>
           </div>
         </div>
         <div className='bg-card rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-lg'>
