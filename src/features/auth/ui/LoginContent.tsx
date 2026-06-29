@@ -7,6 +7,7 @@ import { Spinner } from '@/shared/ui/shadcn/spinner';
 import { useTheme } from '@/shared/ui/shadcn/themeProvider';
 import { config } from '@/shared/config'
 import { cn } from '@/shared/lib'
+import { generateCodeVerifier, codeChallenge, generateState, savePkce } from '@/features/auth/lib/pkce';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -52,18 +53,23 @@ const LoginForm = () => {
   const { theme } = useTheme();
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // SSO 로그인 URL 생성
-  const getSsoLoginUrl = () => {
-    const ssoUrl = config.ssoUrl;
-    // 현재 페이지를 callback URL로 설정
-    const callbackUrl = `${window.location.origin}/auth/callback`;
-    return `${ssoUrl}/login?redirect_uri=${encodeURIComponent(callbackUrl)}`;
-  };
-
-  // SSO로 리다이렉트
-  const handleSsoRedirect = () => {
+  // SSO로 리다이렉트 (PKCE 인가코드 흐름)
+  // code_verifier/state 를 생성·보관하고 code_challenge(S256) 를 인가 요청에 첨부한다.
+  const handleSsoRedirect = async () => {
     setIsRedirecting(true);
-    window.location.href = getSsoLoginUrl();
+    const verifier = generateCodeVerifier();
+    const state = generateState();
+    savePkce(verifier, state);
+    const challenge = await codeChallenge(verifier);
+    const callbackUrl = `${window.location.origin}/auth/callback`;
+    const params = new URLSearchParams({
+      redirect_uri: callbackUrl,
+      client_id: 'hr',
+      code_challenge: challenge,
+      code_challenge_method: 'S256',
+      state,
+    });
+    window.location.href = `${config.ssoUrl}/login?${params.toString()}`;
   };
 
   // 자동 리다이렉트 (선택적 - 필요시 활성화)
