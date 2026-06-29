@@ -183,7 +183,6 @@ export interface UpdateDashboardResp {
 
 export interface ResetPasswordReq {
   user_id: string
-  new_password: string
 }
 
 // 비밀번호 초기화 요청 (비로그인)

@@ -1276,9 +1276,9 @@ vacation,history.empty.typeStats.title,휴가 유형 통계가 없습니다,No V
 vacation,history.empty.typeStats.description,사용 가능한 휴가 유형이 없습니다,No available vacation types
 admin,user.passwordReset,비밀번호 초기화,Reset Password
 admin,user.passwordResetTitle,비밀번호 초기화,Reset Password
-admin,user.passwordResetDesc,{{name}} 사용자의 비밀번호를 초기화합니다.,Reset the password for user {{name}}.
-admin,user.newPassword,새 비밀번호,New Password
-admin,user.newPasswordPlaceholder,새 비밀번호를 입력하세요,Enter new password
+admin,user.passwordResetConfirm,{{name}} 사용자의 비밀번호를 초기화하면 임시 비밀번호가 사용자 이메일로 발송됩니다. 계속하시겠습니까?,Resetting the password for user {{name}} will send a temporary password to their email. Do you want to continue?
+admin,user.passwordResetSuccess,임시 비밀번호를 사용자 이메일로 발송했습니다.,A temporary password has been sent to the user's email.
+admin,user.passwordResetError,비밀번호 초기화에 실패했습니다.,Failed to reset the password.
 admin,user.resetting,초기화 중...,Resetting...
 admin,user.reset,초기화,Reset
 login,forgotPassword,비밀번호를 잊으셨나요?,Forgot your password?
