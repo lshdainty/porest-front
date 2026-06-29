@@ -177,10 +177,7 @@ export const userApi = {
   resetPassword: async (data: ResetPasswordReq): Promise<void> => {
     const resp: ApiResponse = await apiClient.request({
       method: 'patch',
-      url: `/users/${data.user_id}/password`,
-      data: {
-        new_password: data.new_password
-      }
+      url: `/users/${data.user_id}/password`
     })
 
     if (!resp.success) throw new Error(resp.message)
