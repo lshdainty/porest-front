@@ -1,5 +1,6 @@
 import Loading from '@/shared/ui/loading/Loading';
 import { sessionApi } from '@/entities/session';
+import { getCodeVerifier, getSavedState, clearPkce } from '@/features/auth/lib/pkce';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +15,40 @@ const AuthCallbackPage = () => {
 
   useEffect(() => {
     const handleCallback = async () => {
-      // URL fragment에서 토큰 추출 (예: /auth/callback#token=xxx)
+      // 신규: OAuth2 Authorization Code + PKCE (?code=&state=)
+      const query = new URLSearchParams(window.location.search);
+      const code = query.get('code');
+      if (code) {
+        const returnedState = query.get('state');
+        const savedState = getSavedState();
+        const verifier = getCodeVerifier();
+        // verifier 없거나 state(CSRF) 불일치 시 거부
+        if (!verifier || (savedState && returnedState && savedState !== returnedState)) {
+          clearPkce();
+          setError('인증 상태 검증에 실패했습니다.');
+          setTimeout(() => navigate('/login', { replace: true }), 3000);
+          return;
+        }
+        try {
+          const redirectUri = `${window.location.origin}/auth/callback`;
+          await sessionApi.exchangeCode({ code, codeVerifier: verifier, redirectUri });
+          clearPkce();
+          window.history.replaceState({}, '', window.location.pathname);
+          navigate('/dashboard', { replace: true });
+        } catch (err) {
+          console.error('Code exchange failed:', err);
+          clearPkce();
+          setError(
+            err instanceof Error
+              ? err.message
+              : 'HR 서비스 접근 권한이 없거나 인가코드 교환에 실패했습니다.'
+          );
+          setTimeout(() => navigate('/login', { replace: true }), 3000);
+        }
+        return;
+      }
+
+      // 기존(병행): URL fragment 의 SSO 토큰 (예: /auth/callback#token=xxx)
       const hash = window.location.hash;
       const params = new URLSearchParams(hash.substring(1)); // # 제거
       const ssoToken = params.get('token');
