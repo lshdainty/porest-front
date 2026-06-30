@@ -1,7 +1,7 @@
 import Loading from '@/shared/ui/loading/Loading';
 import { sessionApi } from '@/entities/session';
 import { getCodeVerifier, getSavedState, clearPkce } from '@/features/auth/lib/pkce';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 /**
@@ -12,8 +12,12 @@ import { useNavigate } from 'react-router-dom';
 const AuthCallbackPage = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  // StrictMode/재렌더로 effect 가 2번 돌아도 일회용 code 를 단 한 번만 교환하도록 가드
+  const calledRef = useRef(false);
 
   useEffect(() => {
+    if (calledRef.current) return;
+    calledRef.current = true;
     const handleCallback = async () => {
       // 신규: OAuth2 Authorization Code + PKCE (?code=&state=)
       const query = new URLSearchParams(window.location.search);
