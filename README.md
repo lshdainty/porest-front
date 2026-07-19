@@ -51,7 +51,7 @@ src/
 ├── entities/        # 도메인 엔티티 API/모델 (user, vacation, work 등)
 ├── features/        # 기능 단위 모듈 (admin-*, vacation-*, work-*, auth 등)
 ├── pages/           # 라우트 단위 페이지 컴포넌트
-├── shared/          # 공용 API/자산/설정/훅/UI
+├── shared/          # 공용 API/자산/설정/훅/유틸/타입/UI
 ├── widgets/         # 화면 조합 위젯 (layout, sidebar, notice-popup)
 ├── locales/         # 다국어 리소스 (ko, en)
 ├── main.tsx         # 엔트리포인트
@@ -60,12 +60,42 @@ src/
 
 ---
 
+## 주요 화면
+
+로그인 후 대시보드(`/dashboard`)로 진입하며, 메뉴별 권한(`requiredPermissions`)에 따라 접근이 제어됩니다.
+
+| 구분 | 경로 | 화면 |
+|------|------|------|
+| **홈** | `/dashboard` | 대시보드 (기본 진입) |
+| | `/calendar` | 캘린더 |
+| | `/notice` | 공지사항 |
+| **휴가** | `/vacation/history` | 휴가 현황 |
+| | `/vacation/application` | 휴가 신청 |
+| **업무** | `/work/report` | 업무 보고 |
+| | `/work/schedule` | 일정 관리 |
+| **조직문화** | `/culture/dues` | 회비 |
+| | `/culture/regulation` | 규정 |
+| **관리자** | `/admin/company` | 회사 관리 |
+| | `/admin/users/management` | 사용자 초대 및 관리 |
+| | `/admin/users/department` | 부서 관리 |
+| | `/admin/vacation/approval` | 휴가 승인 및 부여 |
+| | `/admin/vacation/policy` | 휴가 정책 |
+| | `/admin/vacation/plan` | 휴가 플랜 |
+| | `/admin/authority` | 역할 및 권한 |
+| | `/admin/holiday` | 공휴일 관리 |
+| | `/admin/work` | 업무 코드 |
+| | `/admin/notice` | 공지사항 관리 |
+
+이 외에 인증 화면(`/login`, `/signup`, `/auth/callback`, `/password-change`)이 있으며, 로그인/회원가입은 SSO 서버와 연동됩니다.
+
+---
+
 ## 시작하기
 
 ### 요구사항
 
-- **Node.js**: 18+
-- **npm**: 9+ (또는 yarn, pnpm)
+- **Node.js**: 20.19+ (또는 22.12+, Vite 8 요구사항)
+- **npm**: 10+ (또는 yarn, pnpm)
 
 ### 설치 및 실행
 
@@ -73,11 +103,14 @@ src/
 # 의존성 설치
 npm install
 
-# 개발 서버 실행
+# 개발 서버 실행 (http://localhost:3001)
 npm run dev
 
-# 프로덕션 빌드
+# 프로덕션 빌드 (타입 체크 포함)
 npm run build
+
+# 프로덕션 빌드 (타입 체크 생략)
+npm run build:skip-check
 
 # 빌드된 앱 프리뷰
 npm run serve
@@ -88,6 +121,16 @@ npm run lint
 # 다국어 파일 생성
 npm run i18n:generate
 ```
+
+### 환경 변수
+
+`.env.example`을 참고하여 `.env.local` 파일을 생성하세요.
+
+| 변수 | 설명 | 예시 |
+|------|------|------|
+| `VITE_BASE_URL` | 백엔드 서버 origin (정적 리소스 URL 및 API baseURL 구성) | `http://localhost:8001` |
+| `VITE_API_URL` | API 공통 경로 prefix (`VITE_BASE_URL` + `VITE_API_URL`이 axios baseURL) | `/api/v1` |
+| `VITE_SSO_URL` | SSO(통합 인증) 서버 origin (로그인/회원가입 시 리다이렉트) | `http://localhost:3000` |
 
 ---
 
