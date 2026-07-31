@@ -1,13 +1,17 @@
+import { config } from '@/shared/config/env'
+
 /**
  * 개발 환경 워터마크 컴포넌트
- * 운영 도메인이 아닐 때 화면 중앙에 "DEVELOPMENT" 워터마크를 표시합니다.
+ * 운영 배포(VITE_ENV=prod)가 아닐 때 화면 중앙에 "DEVELOPMENT" 워터마크를 표시합니다.
+ * 로컬 개발(값 없음)·dev 배포는 모두 표시 — 운영만 숨긴다.
+ *
+ * 판정은 빌드 시점 env 로 한다 — Jenkins 가 배포 환경별 <env>.env 를 .env.production 으로
+ * 복사해 빌드하므로 dev/prod 가 번들에 확정된다. (이전엔 window.location.hostname 을
+ * 'porest.cloud' 와 비교했는데, 실제 운영 도메인이 서브도메인이라 운영에서도 워터마크가
+ * 노출됐다. 도메인·서브도메인이 바뀌어도 안 깨지도록 env 기준으로 전환.)
  */
 export const EnvWatermark = () => {
-  // 운영 도메인에서는 표시하지 않음
-  const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
-  const isProduction = hostname === 'porest.cloud' || hostname === 'www.porest.cloud'
-
-  if (isProduction) return null
+  if (config.isProd) return null
 
   return (
     <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-[9999]">
