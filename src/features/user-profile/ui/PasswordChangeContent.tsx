@@ -7,9 +7,10 @@ import { Input } from '@/shared/ui/shadcn/input';
 import { toast } from '@/shared/ui/shadcn/sonner';
 import { Spinner } from '@/shared/ui/shadcn/spinner';
 import { useTheme } from '@/shared/ui/shadcn/themeProvider';
+import { PasswordRequirements } from '@/shared/ui/password-requirements/PasswordRequirements';
 import { useUser } from '@/entities/session';
 import { useChangePasswordMutation } from '@/entities/user';
-import { cn } from '@/shared/lib'
+import { cn, createNewPasswordSchema } from '@/shared/lib'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { KeyRound, Lock, LogOut, ShieldCheck } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
@@ -34,7 +35,7 @@ const PasswordChangeContent = ({ className, ...props }: PasswordChangeContentPro
 const createFormSchema = (t: (key: string) => string) =>
   z.object({
     current_password: z.string().min(1, t('currentPasswordRequired')),
-    new_password: z.string().min(1, t('newPasswordRequired')),
+    new_password: createNewPasswordSchema(t),
     confirm_password: z.string().min(1, t('confirmPasswordRequired')),
   }).refine((data) => data.new_password === data.confirm_password, {
     message: t('passwordMismatch'),
@@ -131,6 +132,7 @@ const PasswordChangeForm = () => {
                     placeholder={t('newPasswordPlaceholder')}
                   />
                   <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
+                  <PasswordRequirements password={field.value} />
                 </Field>
               )}
             />
