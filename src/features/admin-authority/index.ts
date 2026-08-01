@@ -12,4 +12,4 @@ export { UserListSkeleton } from './ui/UserListSkeleton';
 export { UserManagementPanel } from './ui/UserManagementPanel';
 export { UserRoleAssignment } from './ui/UserRoleAssignment';
 export { UserRoleAssignmentSkeleton } from './ui/UserRoleAssignmentSkeleton';
-export { Authority, Role, User } from './types';
+export type { Authority, Role, User } from './types';
