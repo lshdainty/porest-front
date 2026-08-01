@@ -8,12 +8,13 @@ import { toast } from '@/shared/ui/shadcn/sonner';
 import { Spinner } from '@/shared/ui/shadcn/spinner';
 import { useTheme } from '@/shared/ui/shadcn/themeProvider';
 import { PasswordRequirements } from '@/shared/ui/password-requirements/PasswordRequirements';
+import { PasswordMatch } from '@/shared/ui/password-requirements/PasswordMatch';
 import { useUser } from '@/entities/session';
 import { useChangePasswordMutation } from '@/entities/user';
 import { cn, createNewPasswordSchema } from '@/shared/lib'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { KeyRound, Lock, LogOut, ShieldCheck } from 'lucide-react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -65,6 +66,9 @@ const PasswordChangeForm = () => {
       confirm_password: '',
     },
   });
+
+  // 확인 입력 일치 표시용 — 입력할 때마다 갱신
+  const newPassword = useWatch({ control: form.control, name: 'new_password' }) ?? '';
 
   const onSubmit = (values: PasswordChangeFormValues) => {
     changePasswordMutation.mutate(
@@ -156,7 +160,11 @@ const PasswordChangeForm = () => {
                     type='password'
                     placeholder={t('confirmPasswordPlaceholder')}
                   />
-                  <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
+                  {/* 불일치는 아래 PasswordMatch 가 입력 중에 이미 보여주므로, 여기선 미입력 에러만 남긴다 */}
+                  <FieldError
+                    errors={fieldState.error && !field.value ? [fieldState.error] : undefined}
+                  />
+                  <PasswordMatch password={newPassword} confirmPassword={field.value} />
                 </Field>
               )}
             />

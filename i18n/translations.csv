@@ -1071,6 +1071,7 @@ user,confirmPassword,새 비밀번호 확인,Confirm New Password
 user,confirmPasswordPlaceholder,새 비밀번호를 다시 입력하세요,Enter new password again
 user,confirmPasswordRequired,비밀번호 확인을 입력해주세요.,Please confirm your new password.
 user,passwordMismatch,비밀번호가 일치하지 않습니다.,Passwords do not match.
+user,passwordMatched,비밀번호가 일치합니다.,Passwords match.
 user,passwordChangeSuccess,비밀번호가 성공적으로 변경되었습니다.,Password changed successfully.
 user,passwordChangeError,비밀번호 변경에 실패했습니다.,Failed to change password.
 auth,signup.birthDate,생년월일,Birth Date
