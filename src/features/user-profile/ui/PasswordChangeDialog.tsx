@@ -11,7 +11,9 @@ import { Field, FieldError, FieldLabel } from '@/shared/ui/shadcn/field';
 import { Input } from '@/shared/ui/shadcn/input';
 import { toast } from '@/shared/ui/shadcn/sonner';
 import { Spinner } from '@/shared/ui/shadcn/spinner';
+import { PasswordRequirements } from '@/shared/ui/password-requirements/PasswordRequirements';
 import { useChangePasswordMutation } from '@/entities/user';
+import { createNewPasswordSchema } from '@/shared/lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { KeyRound, Lock, ShieldCheck } from 'lucide-react';
 import { useEffect } from 'react';
@@ -22,7 +24,7 @@ import { z } from 'zod';
 const createFormSchema = (t: (key: string) => string) =>
   z.object({
     current_password: z.string().min(1, t('currentPasswordRequired')),
-    new_password: z.string().min(1, t('newPasswordRequired')),
+    new_password: createNewPasswordSchema(t),
     confirm_password: z.string().min(1, t('confirmPasswordRequired')),
   }).refine((data) => data.new_password === data.confirm_password, {
     message: t('passwordMismatch'),
@@ -123,6 +125,7 @@ const PasswordChangeDialog = ({ open, onOpenChange }: PasswordChangeDialogProps)
                     placeholder={t('newPasswordPlaceholder')}
                   />
                   <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
+                  <PasswordRequirements password={field.value} />
                 </Field>
               )}
             />

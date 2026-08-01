@@ -9,3 +9,8 @@ export type {
   VacationStatusCode,
   VacationStatusConfig,
 } from '@/shared/lib/vacationStatus'
+export {
+  PASSWORD_RULES,
+  isPasswordValid,
+  createNewPasswordSchema,
+} from '@/shared/lib/password'
