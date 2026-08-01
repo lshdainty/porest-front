@@ -40,7 +40,12 @@ const createFormSchema = (t: (key: string) => string) =>
   }).refine((data) => data.new_password === data.confirm_password, {
     message: t('passwordMismatch'),
     path: ['confirm_password'],
-  });
+  })
+    // 서버도 현재와 동일한 비밀번호를 거부한다 — 두 값 모두 폼이 갖고 있으니 왕복 전에 거른다.
+    .refine((data) => !data.current_password || data.new_password !== data.current_password, {
+      message: t('passwordSameAsCurrent'),
+      path: ['new_password'],
+    });
 
 type PasswordChangeFormValues = z.infer<ReturnType<typeof createFormSchema>>;
 
