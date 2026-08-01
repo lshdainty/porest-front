@@ -1,0 +1,15 @@
+# 빌드 컨텍스트에서 제외 — COPY . . 가 호스트 산출물로 이미지 내용을 덮어쓰지 않게 한다.
+# 특히 tsconfig.tsbuildinfo 가 넘어가면 tsc -b 가 증분 판단으로 타입 체크를 건너뛸 수 있어,
+# Dockerfile 의 npm run build 타입 게이트가 무력화된다.
+node_modules
+dist
+*.tsbuildinfo
+
+.git
+.github
+.vscode
+.claude
+
+# 로컬 전용 환경파일 (배포는 Jenkins 가 .env.production 을 주입)
+.env.local
+.env.*.local
