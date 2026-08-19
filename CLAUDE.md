@@ -1,6 +1,10 @@
 # CLAUDE.md
 이 파일은 Claude Code가 이 리포지토리의 코드를 작업할 때 가이드를 제공합니다.
 
+> **워크스페이스 공통 규칙**(Git 작업 격리 · 스테이징 범위 · 태그·릴리스)은
+> 상위 `/home/lshdainty/study/CLAUDE.md` 에 있다. Claude Code 가 디렉토리 워크업으로
+> 자동 로드하므로 여기에 복사하지 않는다 — 복사본은 원문이 바뀌어도 따라오지 않는다.
+
 ## 아키텍처
 React 19 + TypeScript + Vite를 사용하는 프론트엔드 프로젝트:
 
