@@ -10,6 +10,7 @@ dist
 .vscode
 .claude
 
-# 로컬 전용 환경파일 (배포는 Jenkins 가 .env.production 을 주입)
+# 로컬 전용 환경파일 (배포는 Jenkins 가 .env.production 을 주입하므로 그것만 남긴다)
+.env
 .env.local
 .env.*.local
